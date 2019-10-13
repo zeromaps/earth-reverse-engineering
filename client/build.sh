@@ -26,5 +26,6 @@ else
 		CFLAGS="$CFLAGS -Igl2/include"
 		LDFLAGS="$LDFLAGS -lGL -lm -ldl"
 	fi
-	c++ $CFLAGS main.cpp $LDFLAGS -o main
+	#c++ $CFLAGS main.cpp $LDFLAGS -o main
+	clang++ $CFLAGS main.cpp $LDFLAGS -o main
 fi

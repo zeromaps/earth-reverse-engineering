@@ -146,7 +146,7 @@ void drawPlanet(gl_ctx_t &ctx) {
 	auto near = horizon > 370000 ? altitude / 2 : 50;
 	auto far = horizon;
 	if (near >= far) near = far - 1;
-	if (isnan(far) || far < near) far = near + 1;
+	if (std::isnan(far) || far < near) far = near + 1;
 	projection = perspective(fov, aspect_ratio, near, far);
 	
 	// rotation

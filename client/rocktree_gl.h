@@ -1,3 +1,4 @@
+#include <iostream>
 #include <SDL_opengl.h>
 
 struct gl_ctx_t {
@@ -18,7 +19,8 @@ void meshTexImage2d(const rocktree_t::node_t::mesh_t &mesh) {
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, mesh.texture_width, mesh.texture_height, 0, GL_RGB, GL_UNSIGNED_BYTE, mesh.texture.data());
 		break;
 	case rocktree_t::texture_format_dxt1:
-		glCompressedTexImage2D(GL_TEXTURE_2D, 0, GL_COMPRESSED_RGB_S3TC_DXT1_EXT, mesh.texture_width, mesh.texture_height, 0, mesh.texture.size(), mesh.texture.data());
+		//glCompressedTexImage2D(GL_TEXTURE_2D, 0, GL_COMPRESSED_RGB_S3TC_DXT1_EXT, mesh.texture_width, mesh.texture_height, 0, mesh.texture.size(), mesh.texture.data());
+		glCompressedTexImage2D(GL_TEXTURE_2D, 0, 0x83F0, mesh.texture_width, mesh.texture_height, 0, mesh.texture.size(), mesh.texture.data());
 		break;
 	default:
 		fprintf(stderr, "unsupported texture format: %d\n", mesh.texture_format);

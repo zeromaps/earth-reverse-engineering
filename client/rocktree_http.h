@@ -45,6 +45,7 @@ void fetchData(const char* path, int i, void (*thunk)(int i, int error, uint8_t 
 #else
 
 #define HTTP_IMPLEMENTATION
+#include <mutex>
 #include "http.h"
 
 std::once_flag cache_init_once_flag;

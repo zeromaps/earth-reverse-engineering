@@ -380,7 +380,7 @@ namespace crnd
 	#ifdef __APPLE__
 	typedef uint64_t ptr_bits;
 	#else
-   typedef uint32 ptr_bits;
+   typedef uint64_t ptr_bits;
    #endif
 #endif
 

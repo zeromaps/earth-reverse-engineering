@@ -6,7 +6,8 @@ void populateBulk(rocktree_t::bulk_t *bulk, std::unique_ptr<BulkMetadata> bulk_m
 
 	bulk->_metadata = std::move(bulk_metadata);
 
-	for (int i = 0; i < 3; i++) bulk->head_node_center[i] = bulk->_metadata->head_node_center()[i];			
+	//for (int i = 0; i < 3; i++) bulk->head_node_center[i] = bulk->_metadata->head_node_center()[i];			
+	for (int i = 0; i < 3; i++) bulk->head_node_center[i] = bulk->_metadata->head_node_center().Get(i);
 
 	for (auto node_meta : bulk->_metadata->node_metadata()) {						
 		
@@ -96,9 +97,11 @@ void populateNode(rocktree_t::node_t *node, std::unique_ptr<NodeData> node_data)
 
 		auto textures = mesh.texture();
 		assert(textures.size() == 1);
-		auto texture = textures[0];
+		//auto texture = textures[0];
+		auto texture = textures.Get(0);
 		assert(texture.data().size() == 1);
-		auto tex = texture.data()[0];
+		//auto tex = texture.data()[0];
+		auto tex = texture.data().Get(0);
 
 		// maybe: keep compressed in memory?
 		if (texture.format() == Texture_Format_JPG) {

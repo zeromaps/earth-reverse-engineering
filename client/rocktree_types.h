@@ -1,3 +1,5 @@
+#include <atomic>
+#include <memory>
 #include <SDL_opengl.h>
 
 enum dl_state : int {
