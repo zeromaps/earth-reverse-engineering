@@ -30,8 +30,7 @@ static rocktree_t *_planetoid = NULL;
 
 void loadPlanet() {
 	auto planetoid = new rocktree_t();
-	planetoid->downloaded = false;
-	_planetoid = planetoid;
+	planetoid->downloaded = false; _planetoid = planetoid;
 
 	getPlanetoid([=](std::unique_ptr<PlanetoidMetadata> _metadata) {		
 		if (!_metadata) fprintf(stderr, "%s", "no planetoid\n"), abort();
@@ -105,11 +104,13 @@ void drawPlanet(gl_ctx_t &ctx) {
 	glViewport(0, 0, width, height);
 	auto sky = 0x83b5fc;
 	glClearColor((sky>>16 & 0xff) / 255.0f, (sky>>8 & 0xff) / 255.0f, (sky & 0xff) / 255.0f, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);	
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+	static bool prev_mouse_pressed = false;
 	auto mouse_state = SDL_GetMouseState(NULL, NULL);
 	auto state = SDL_GetKeyboardState(NULL);
 	auto key_up_pressed = state[SDL_SCANCODE_W];
+	//std::cout << "key_up_pressed: " << key_up_pressed << std::endl;
 	auto key_left_pressed = state[SDL_SCANCODE_A];
 	auto key_down_pressed = state[SDL_SCANCODE_S];
 	auto key_right_pressed = state[SDL_SCANCODE_D];
@@ -123,7 +124,10 @@ void drawPlanet(gl_ctx_t &ctx) {
 
 	// nyc
 	static Vector3d eye = { 1329866.230289, -4643494.267515, 4154677.131562 };
-	static Vector3d direction = { 0.219862, 0.419329, 0.312226 };		
+	//static Vector3d direction = { 0.219862, 0.419329, 0.312226 };
+	static Vector3d direction = { 0.0, 1.0, 0.0};
+	//static Vector3d direction = { 0.0, 0.0, 1.0};
+	//static Vector3d eye = { -2166812, -1820672, 5696681 };
 
 	// print position every 2 seconds
 	{
@@ -132,6 +136,7 @@ void drawPlanet(gl_ctx_t &ctx) {
 		if (ms > 2000) {
 			ms = 0;
 			printf("pos: %f %f %f, dir: %f %f %f\n", eye.x(), eye.y(), eye.z(), direction.x(), direction.y(), direction.z());
+			std::cout << "mouse_pressed: " << mouse_pressed << std::endl;
 		}
 	}
 
@@ -151,9 +156,23 @@ void drawPlanet(gl_ctx_t &ctx) {
 	
 	// rotation
 	int mouse_x, mouse_y;
-	SDL_GetRelativeMouseState(&mouse_x, &mouse_y);
-	double yaw = mouse_x * 0.001;
-	double pitch = -mouse_y * 0.001;
+	double yaw = 0.0;
+	double pitch = 0.0;
+        static SDL_Cursor* cursor_hand = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_HAND);
+        static SDL_Cursor* cursor_arrow = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_ARROW);
+	if (mouse_pressed) {
+                SDL_SetCursor(cursor_hand);
+
+		if (!prev_mouse_pressed) {
+			SDL_GetRelativeMouseState(nullptr, nullptr);
+		}
+		SDL_GetRelativeMouseState(&mouse_x, &mouse_y);
+		yaw = -mouse_x * 0.001;
+		pitch = mouse_y * 0.001;
+	} else {
+                SDL_SetCursor(cursor_arrow);
+	}
+	prev_mouse_pressed = mouse_pressed;
 	auto overhead = direction.dot(-up);
 	if ((overhead > 0.99 && pitch < 0) || (overhead < -0.99 && pitch > 0))
 		pitch = 0;
@@ -170,6 +189,7 @@ void drawPlanet(gl_ctx_t &ctx) {
 	// movement
 	auto speed_amp = fmin(2600, powf(fmax(0, (altitude - 500)/10000)+1, 1.337)) / 6;
 	auto mag = 100*(deltaTime/17.0)*(1+key_boost_pressed*4) * speed_amp;
+	//auto mag = 100*(deltaTime/17.0)*(1+key_boost_pressed*4) * speed_amp;
 	auto sideways = direction.cross(up).normalized();	
 	auto forwards = direction * mag;
 	auto backwards = -direction * mag;
@@ -474,7 +494,7 @@ int main(int argc, char* argv[]) {
 	initGL(*ctx);
 	loadPlanet();
 
-	SDL_SetRelativeMouseMode(SDL_TRUE);
+	//SDL_SetRelativeMouseMode(SDL_TRUE);
 
 #ifdef EMSCRIPTEN
 	emscripten_set_main_loop_arg([](void* _ctx){	
